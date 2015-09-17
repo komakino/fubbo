@@ -121,8 +121,8 @@ var Board = new Class({
             points: points,
         }
     },
-    iterate: function(chars,pattern,map,results){
-        var localPattern, localMap, pos,
+    iterate: function(chars,pattern,map,result){
+        var e, localPattern, localMap, pos,
             char = chars.shift();
 
         for (var i = map[char].length - 1; i >= 0; i--) {
@@ -132,21 +132,27 @@ var Board = new Class({
 
             if(!localPattern.length || this.isAdjecent(pos,localPattern[pattern.length-1])){
                 localPattern.push(pos);
-                if(!chars.length) results.push(this.evaluate(localPattern));
-                else this.iterate(_clone(chars),localPattern,localMap,results);
+                if(!chars.length){
+                    e = this.evaluate(localPattern)
+                    if(e.points > result.data.points) result.data = e;
+                }
+                else this.iterate(_clone(chars),localPattern,localMap,result);
             }
         };
     },
     find: function(word){
-        var results = [];
+        var result = {
+            word: word,
+            data:{points:0},
+        };
 
         if(!this.checkAllChars(word)) return false;
-        this.iterate(word.chars,[],this.charMap,results);
+        this.iterate(word.chars,[],this.charMap,result);
 
-        return results;
+        if(result.data.points) return result;
+        else return false;
     }
 });
-// kare nsst ateå ntak
 
 var board = new Board([
     ['k','a','r','e'],
@@ -155,13 +161,6 @@ var board = new Board([
     ['n','t','a','k'],
 ]);
 
-// 22 tl
-// 30 tl
-// 21 dw
-// 32 dw
-// 23 tw
-
-// board.addDoubleLetter([2,2]);
 board.addTrippleLetter([2,2]);
 board.addTrippleLetter([3,0]);
 board.addDoubleLetter([0,3]);
@@ -169,31 +168,18 @@ board.addDoubleWord([2,1]);
 board.addDoubleWord([3,2]);
 board.addTrippleWord([2,3]);
 
-
-console.log(board.multipliers,board.getWordMultiplier([2,1]),board.getWordMultiplier([3,2]));
 var words = [];
-
-// wordlist = ['kassettak'];
 
 wordlist.map(function(word){
     word = new Word(word);
-    results = board.find(word)
-    if(results.length){
-        results.map(function(result){
-            result.word = word;
-            words.push(result);
-        })
-    }
+    result = board.find(word);
+    if(result) words.push(result);
 });
 
-words.sort(function(a,b){
-    if(a.points < b.points) return 1;
-    else if(a.points > b.points) return -1;
-    else return 0;
-});
+words.sort(function(a,b){return a.data.points - b.data.points});
 
 
 words.map(function(word){
-    console.log('> %s < would give %s points',word.word,word.points);
+    console.log('%s points: %s ',word.data.points,word.word);
 });
 
