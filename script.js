@@ -33,7 +33,11 @@ function _clone(value){
 var Board = new Class({
     values: values,
     $construct: function(data){
-        this.data       = data;
+        if(typeof data == 'string'){
+            this.data       = this.fromString(data);
+        } else {
+            this.data       = data;
+        }
         this.charMap    = {};
         this.charList   = [];
         this.multipliers = {
@@ -42,6 +46,15 @@ var Board = new Class({
         };
 
         this.mapChars();
+    },
+    fromString: function(str){
+        var data = [];
+        data.push(str.substr(0,4).split(''));
+        data.push(str.substr(4,4).split(''));
+        data.push(str.substr(8,4).split(''));
+        data.push(str.substr(12,4).split(''));
+        console.log(data);
+        return data;
     },
     mapChars: function(){
         var char;
@@ -153,20 +166,26 @@ var Board = new Class({
         else return false;
     }
 });
+// eeinlgaeaeslpntt
 
-var board = new Board([
-    ['k','a','r','e'],
-    ['n','s','s','t'],
-    ['a','t','e','å'],
-    ['n','t','a','k'],
-]);
+// dl 02
+// dl 20
+// tl 21
+// dw 33
+var board = new Board('eeinlgaeaeslpntt');
+// var board = new Board([
+//     ['n','l','i','a'],
+//     ['r','k','o','n'],
+//     ['t','a','m','t'],
+//     ['k','e','n','s'],
+// ]);
 
 board.addTrippleLetter([2,2]);
-board.addTrippleLetter([3,0]);
-board.addDoubleLetter([0,3]);
-board.addDoubleWord([2,1]);
-board.addDoubleWord([3,2]);
-board.addTrippleWord([2,3]);
+board.addDoubleLetter([3,1]);
+// board.addTrippleLetter([3,0]);
+// board.addDoubleWord([2,1]);
+// board.addDoubleWord([3,2]);
+// board.addTrippleWord([2,3]);
 
 var words = [];
 
